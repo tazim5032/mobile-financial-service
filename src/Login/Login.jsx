@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import  { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import useAxiosPublic from '../Utils/useAxiosPublic';
+import { useContext } from 'react';
+import { AuthContext } from '../Providers/AuthProvider';
 
 const Login = () => {
+    const axiosPublic = useAxiosPublic();
     const navigate = useNavigate();
+
+    const {signIn} = useContext(AuthContext);
+
     const [formData, setFormData] = useState({
         identifier: '',
         pin: '',
@@ -34,21 +39,31 @@ const Login = () => {
     };
 
     const handleSubmit = async (e) => {
+        console.log(formData.email);
         e.preventDefault();
         if (!validate()) return;
 
-        try {
-            const response = await axios.post('http://localhost:5000/login', formData);
-            if (response.data.success) {
-                Swal.fire('Success', 'Login successful', 'success');
-                navigate('/dashboard'); // Navigate to dashboard after successful login
-            } else {
-                Swal.fire('Error', 'Invalid credentials', 'error');
-            }
-        } catch (error) {
-            console.error('There was an error logging in!', error);
-            Swal.fire('Error', 'Your emai or mobile or pin number is invalid', 'error');
+       // console.log(formData);
+
+        const info = {
+            email : formData.email,
+            pin : formData.pin,
+            
         }
+        signIn(info.email, info.pin);
+
+        // try {
+        //     const response = await axios.post('http://localhost:5000/login', formData);
+        //     if (response.data.success) {
+        //         Swal.fire('Success', 'Login successful', 'success');
+        //         navigate('/dashboard'); // Navigate to dashboard after successful login
+        //     } else {
+        //         Swal.fire('Error', 'Invalid credentials', 'error');
+        //     }
+        // } catch (error) {
+        //     console.error('There was an error logging in!', error);
+        //     Swal.fire('Error', 'Your emai or mobile or pin number is invalid', 'error');
+        // }
     };
 
     return (
@@ -59,15 +74,15 @@ const Login = () => {
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Email or Mobile Number</label>
                         <input
-                            type="text"
-                            name="identifier"
-                            value={formData.identifier}
+                            type="email"
+                            name="email"
+                            value={formData.email}
                             onChange={handleChange}
                             className="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                             required
                         />
-                        {errors.identifier && (
-                            <p className="mt-1 text-sm text-red-600">{errors.identifier}</p>
+                        {errors.email && (
+                            <p className="mt-1 text-sm text-red-600">{errors.email}</p>
                         )}
                     </div>
                     <div>
@@ -95,7 +110,7 @@ const Login = () => {
                 </form>
                 <div className="text-center">
                     <p className="text-sm text-gray-600">
-                        Don't have an account?{' '}
+                        Do not have an account?{' '}
                         <Link to="/reg" className="text-blue-500 hover:underline">
                             Register here
                         </Link>.

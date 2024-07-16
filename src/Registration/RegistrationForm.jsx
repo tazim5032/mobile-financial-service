@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { Link } from 'react-router-dom';
+import  { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import useAxiosPublic from '../Utils/useAxiosPublic';
 
 const RegistrationForm = () => {
+
+  const axiosPublic = useAxiosPublic();
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -38,7 +42,7 @@ const RegistrationForm = () => {
     e.preventDefault();
     if (!validate()) return;
 
-    const dataToSend = {
+    const info = {
       ...formData,
       account_status: 'pending',
       balance: 0,
@@ -46,8 +50,9 @@ const RegistrationForm = () => {
     };
 
     try {
-      await axios.post('http://localhost:5000/register', dataToSend);
-      alert('Registration successful');
+      await axiosPublic.post('http://localhost:5000/register', info);
+      alert('Registration successful!');
+      navigate('/login')
     } catch (error) {
       console.error('There was an error registering!', error);
       alert('Registration failed');
